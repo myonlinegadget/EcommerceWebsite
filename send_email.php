@@ -12,7 +12,7 @@ try {
     $mail->Host = 'smtp.gmail.com'; // Set the SMTP server to send through
     $mail->SMTPAuth = true;
     $mail->Username = '3110nagesh@gmail.com'; // SMTP username
-    $mail->Password = 'duubkxursxcujzzd'; // SMTP password
+    $mail->Password = 'test'; // SMTP password
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
     $mail->Port = 587;
 
