@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="styles.css">
+<style>
+.password-container {
+    position: relative;
+    display: flex;
+    align-items: baseline; /* Vertically centers the items */
+    width: 100%; /* Adjust to fit the desired width */
+}
+
+#id_password {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding-right: 30px; /* Space for the eye icon */
+    flex-grow: 1;
+    box-sizing: border-box; /* Ensures padding is included in the width */
+}
+
+.eye-icon {
+    position: absolute;
+    right: 10px; /* Adjust as needed */
+    cursor: pointer;
+    top: 38%; /* Position from the top */
+    transform: translateY(-50%); /* Adjust to center vertically */
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+img {cursor: pointer; display: inline; margin-left:-25px; vertical-align: middle;}
+
+.captcha-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; /* Adjust as needed */
+    margin-bottom: 10px;
+}
+
+#captchaImage {width:220px;height:90px;}
+
+.refresh-button {
+    background-color: #0073e6;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.refresh-button:hover {
+    background-color: #005bb5;
+}
+</style>
+</head>
+<body>
+
+<header>
+   <h1>My Shopping Site</h1> <br/>
+<!-- Main Menu -->
+<section class="main-menu">
+  <div class="menu-container">
+   <div class="centered-menus">
+  <nav><ul><li><a href="index.php" class="button1"><span>Home</span></a></li>
+        </ul>
+  </nav>
+  </div>
+ </div>
+</section>
+</header>
+<div>
+   <section id="registration">
+        <h2>Register</h2>
+        <form action="register.php" method="post" id="registrationForm">
+            <label for="first-name">First Name:</label><input type="text" id="first-name" name="firstName" required>
+            <label for="last-name">Last Name:</label><input type="text" id="last-name" name="lastName" required>
+            <label for="username">Create Username:</label><input type="text" id="username" name="username" required>
+            <label for="email">Email:</label><input type="email" id="email" name="email" required>
+            <label for="password">Password:</label><span class="password-container"><input type="password" id="id_password" name="password" placeholder="Enter your password" required>
+            <img src="images/eye.png" width="20" height="20" id="togglePassword" class="eye-icon"></span>
+            <label for="captcha">Captcha:</label>
+            <input type="text" id="captcha" name="captcha" required>  
+            <div class="captcha-container"><img id="captchaImage" src="" alt="Captcha Image">  
+            <button type="button" id="refreshCaptcha" class="refresh-button">&#8634;</button>
+            </div>
+            <button type="submit" class="register-button">Register</button>
+            <p>Already have an account? <a href="signin.html">Sign In</a></p>
+        </form>
+    </section>
+</div>
+<footer>
+<a href="conditions.html">Conditions of Use</a> <a href="privacy.html">Privacy Notice</a> <a href="help.html">Help</a>
+        <p>&copy; 2024 My Shopping Site</p>
+    </footer>
+
+<script>
+const togglePassword = document.querySelector('#togglePassword');
+const password = document.querySelector('#id_password');
+
+togglePassword.addEventListener('click', function () {
+    // Toggle the type attribute
+    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+    password.setAttribute('type', type);
+
+    // Toggle the eye icon
+    if (password.getAttribute('type') === 'password') {
+        togglePassword.src = 'images/eye.png'; // Eye icon for hidden password
+    } else {
+        togglePassword.src = 'images/eyeslash.png'; // Eye slash icon for visible password
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Mapping of captcha images to their corresponding text
+    const captchaMapping = {
+        'images/captcha1.JPG': '24048B',
+        'images/captcha2.JPG': 'ic8',
+        'images/captcha3.JPG': 'smwm'
+    };
+
+    // List of captcha image URLs
+    const captchaImages = Object.keys(captchaMapping);
+
+    // Function to generate a random integer
+    function getRandomInt(max) {
+        return Math.floor(Math.random() * max);
+    }
+
+    // Function to set a random captcha image
+    function setRandomCaptcha() {
+        const randomIndex = getRandomInt(captchaImages.length);
+        const selectedCaptcha = captchaImages[randomIndex];
+        const captchaImage = document.getElementById('captchaImage');
+        
+        captchaImage.src = selectedCaptcha;
+        captchaImage.dataset.captchaText = captchaMapping[selectedCaptcha];
+    }
+
+    // Call setRandomCaptcha when the page loads
+    setRandomCaptcha();
+
+    // Function to validate the captcha input
+    document.getElementById('registrationForm').addEventListener('submit', function(event) {
+        const userCaptcha = document.getElementById('captcha').value.trim();
+        const captchaText = document.getElementById('captchaImage').dataset.captchaText;
+
+        if (userCaptcha !== captchaText) {
+            event.preventDefault(); // Prevent form submission
+            alert('Captcha does not match. Please try again.');
+            setRandomCaptcha(); // Reload captcha image
+        }
+    });
+
+    // Add event listener for refresh button
+    document.getElementById('refreshCaptcha').addEventListener('click', function() {
+        setRandomCaptcha(); // Change captcha image
+    });
+});
+</script>
+</body>
+</html>

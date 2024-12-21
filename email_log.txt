@@ -1,0 +1,34 @@
+Connecting to smtp.gmail.com on port 587
+C: EHLO localhost
+S: 220 smtp.gmail.com ESMTP d9443c01a7336-1ff59295790sm19558325ad.261 - gsmtp
+
+C: STARTTLS
+S: 250-smtp.gmail.com at your service, [2409:4070:6e3e:dacf:1077:5a9e:8c3c:94de]
+
+C: AUTH LOGIN
+S: 250-SIZE 35882577
+
+C: MzExMG5hZ2VzaEBnbWFpbC5jb20=
+S: 250-8BITMIME
+
+C: ZHV1Ymt4dXJzeGN1anp6ZA==
+S: 250-STARTTLS
+
+C: MAIL FROM: <3110nagesh@gmail.com>
+S: 250-ENHANCEDSTATUSCODES
+
+C: RCPT TO: <3110nagesh@gmail.com>
+S: 250-PIPELINING
+
+C: DATA
+S: 250-CHUNKING
+
+C: Subject: Contact Us Form Submission
+S: 250 SMTPUTF8
+
+C: To: 3110nagesh@gmail.com
+S: 220 2.0.0 Ready to start TLS
+
+C: From: n@m.com
+S: 
+Error in response: 

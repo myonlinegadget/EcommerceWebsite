@@ -1,0 +1,61 @@
+<div class="gallery">
+    <section id="products">
+          <h2>Products</h2>
+                 <div class="product active" data-price="199" data-currency="INR">
+                 <img src="products/images/productA.jpg" alt="Product 1">
+                 <h3>Product 1</h3>
+                 <p>₹199</p>
+                 <button onclick="addToCart('Product A', 199)">Add to Cart</button>
+                 </div>
+                 <div class="product" data-price="299" data-currency="INR">
+                 <img src="products/images/productB.jpg" alt="Product 2">
+                 <h3>Product 2</h3>
+                 <p>₹299</p>
+                 <button onclick="addToCart('Product B', 299)">Add to Cart</button>
+                 <br/>
+                 </div>
+                 <div class="product" data-price="399" data-currency="INR">
+                 <img src="products/images/productC.jpg" alt="Product 3">
+                 <h3>Product 3</h3>
+                 <p>₹399</p>
+                 <button onclick="addToCart('Product C', 399)">Add to Cart</button>
+                 <br/>
+                 </div>
+                 <div class="product" data-price="499" data-currency="INR">
+                 <img src="products/images/productD.jpg" alt="Product 4">
+                 <h3>Product 4</h3>
+                 <p>₹499</p>
+                 <button onclick="addToCart('Product D', 499)">Add to Cart</button>
+                 <br/>
+                 </div>
+                 <div class="product" data-price="599" data-currency="INR">
+                 <img src="products/images/productE.jpg" alt="Product 5">
+                 <h3>Product 5</h3>
+                 <p>₹599</p>
+                 <button onclick="addToCart('Product E', 599)">Add to Cart</button>
+                 </div>
+                 <div class="controls">
+                      <button id="prevBtn">Previous</button>
+                      <button id="nextBtn">Next</button>
+                 </div>
+                 <div class="buy-now-btn">
+                      <button>Buy Now</button>
+                           <div class="payment-methods">
+                                 <form id="paymentForm">
+                                 <label><input type="radio" name="paymentMethod" value="paypal"> PayPal </label>
+                                 <label><input type="radio" name="paymentMethod" value="razorpay"> Razorpay (UPI)</label>
+                                 <label><input type="radio" name="paymentMethod" value="paytm"> PayTM</label>
+                                 <label><input type="radio" name="paymentMethod" value="phonepe"> PhonePe</label>
+                                 <button type="button" onclick="submitPayment()">Proceed to Pay</button>
+                                 </form>
+                           </div>
+                  </div>
+    </section>
+</div>
+
+
+<div id="paymentModal" class="modal">
+    <div class="modal-content" id="modalContent">
+        <button onclick="closeModal()">Close</button>
+    </div> 
+</div>

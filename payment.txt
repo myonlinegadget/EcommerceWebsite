@@ -1,0 +1,206 @@
+//payment PhonePe
+
+const PHONEPE_API_KEY = 'YOUR_PHONEPE_API_KEY';
+const PHONEPE_API_SECRET = 'YOUR_PHONEPE_API_SECRET';
+const PHONEPE_API_URL = 'https://phonepe.com/api/v3/transaction/initiate'; // Replace with actual URL
+
+// Endpoint to handle payment initiation
+app.post('/phonepe/transaction', (req, res) => {
+    const { amount, currency } = req.body;
+
+    if (!amount || !currency) {
+        return res.status(400).json({ success: false, message: 'Invalid request' });
+    }
+
+    // Prepare the request payload for PhonePe
+    const payload = {
+        amount,
+        currency,
+        callbackUrl: 'YOUR_CALLBACK_URL', // URL where PhonePe will redirect after payment
+        // Additional parameters required by PhonePe
+    };
+
+    // Create the hash for authentication (example)
+    const hash = crypto.createHmac('sha256', PHONEPE_API_SECRET)
+                       .update(JSON.stringify(payload))
+                       .digest('hex');
+
+    // Request options
+    const options = {
+        url: PHONEPE_API_URL,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${PHONEPE_API_KEY}`,
+            'X-Signature': hash,
+        },
+        body: JSON.stringify(payload),
+    };
+
+    // Make the request to PhonePe API
+    request(options, (error, response, body) => {
+        if (error) {
+            return res.status(500).json({ success: false, message: 'Payment initiation failed' });
+        }
+
+        const data = JSON.parse(body);
+
+        if (data.success) {
+            res.json({ success: true, paymentUrl: data.paymentUrl });
+        } else {
+            res.status(400).json({ success: false, message: data.message || 'Payment initiation failed' });
+        }
+    });
+});
+
+// Start the server
+
+//app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// PayTM credentials
+const PAYTM_MERCHANT_KEY = 'YOUR_PAYTM_MERCHANT_KEY';
+const PAYTM_MERCHANT_ID = 'YOUR_PAYTM_MERCHANT_ID';
+const PAYTM_ENVIRONMENT = 'TEST'; // or 'PROD' for production
+const PAYTM_API_URL = PAYTM_ENVIRONMENT === 'TEST' ? 'https://securegw-stage.paytm.in/theia/api/v1/initiateTransaction' : 'https://securegw.paytm.in/theia/api/v1/initiateTransaction';
+
+// Endpoint to handle PayTM transaction initiation
+app.post('/paytm/transaction', (req, res) => {
+    const { amount, currency } = req.body;
+
+    if (!amount || !currency) {
+        return res.status(400).json({ success: false, message: 'Invalid request' });
+    }
+
+    // Prepare the request payload for PayTM
+    const txnParams = {
+        MID: PAYTM_MERCHANT_ID,
+        ORDER_ID: `ORDER${Date.now()}`, // Unique Order ID
+        CUST_ID: 'CUSTOMER_ID', // Replace with actual customer ID
+        TXN_AMOUNT: amount.toFixed(2),
+        CHANNEL_ID: 'WEB',
+        INDUSTRY_TYPE_ID: 'Retail',
+        WEBSITE: 'WEBSTAGING', // or 'WEBPROD' for production
+        CALLBACK_URL: 'YOUR_CALLBACK_URL', // URL where PayTM will redirect after payment
+    };
+
+    // Create checksum
+    const checksum = generateChecksum(txnParams);
+
+    // Request options
+    const options = {
+        url: PAYTM_API_URL,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        form: {
+            ...txnParams,
+            CHECKSUMHASH: checksum
+        }
+    };
+
+    // Make the request to PayTM API
+    request(options, (error, response, body) => {
+        if (error) {
+            return res.status(500).json({ success: false, message: 'Payment initiation failed' });
+        }
+
+        const data = JSON.parse(body);
+        if (data.STATUS === 'PENDING') {
+            res.json({ success: true, paymentUrl: data.paymentUrl }); // Replace with actual response URL if needed
+        } else {
+            res.status(400).json({ success: false, message: data.RESPMSG || 'Payment initiation failed' });
+        }
+    });
+});
+
+// Function to generate checksum for PayTM
+function generateChecksum(params) {
+    const keys = Object.keys(params).sort();
+    const str = keys.map(key => `${key}=${params[key]}`).join('&') + `&KEY=${PAYTM_MERCHANT_KEY}`;
+    return crypto.createHash('sha256').update(str).digest('hex');
+}
+
+// Start the server
+//app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+
+
+
+
+
+
+
+// Razorpay credentials and configuration
+const razorpay = new Razorpay({
+    key_id: 'YOUR_RAZORPAY_KEY_ID',
+    key_secret: 'YOUR_RAZORPAY_KEY_SECRET'
+});
+
+// Endpoint to create a Razorpay order
+app.post('/razorpay/transaction', (req, res) => {
+    const { amount, currency } = req.body;
+
+    if (!amount || !currency) {
+        return res.status(400).json({ success: false, message: 'Invalid request' });
+    }
+
+    const options = {
+        amount: amount * 100, // amount in paise
+        currency: currency,
+        receipt: crypto.randomBytes(16).toString('hex'),
+        payment_capture: 1
+    };
+
+    razorpay.orders.create(options, (err, order) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ success: false, message: 'Order creation failed' });
+        } else {
+            res.json({ success: true, orderId: order.id });
+        }
+    });
+});
+
+// Endpoint to handle Razorpay payment success (webhook)
+app.post('/razorpay/verification', (req, res) => {
+    const receivedSignature = req.headers['x-razorpay-signature'];
+    const secret = 'YOUR_WEBHOOK_SECRET';
+
+    const shasum = crypto.createHmac('sha256', secret);
+    shasum.update(req.rawBody);
+    const expectedSignature = shasum.digest('hex');
+
+    if (receivedSignature === expectedSignature) {
+        console.log('Payment verified successfully');
+        res.status(200).send('Payment verified');
+    } else {
+        console.log('Payment verification failed');
+        res.status(400).send('Payment verification failed');
+    }
+});
+
+// Start the server
+//app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+
+
+
+
+
+
+

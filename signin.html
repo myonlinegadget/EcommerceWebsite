@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+/* General Styles */
+
+body {
+    justify-content: center;
+    align-items: center;
+
+}
+
+.form-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    max-width: 350px;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 5px;
+}
+
+input {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+button {
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+p {
+    text-align: center;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+img {
+    display: block;
+    margin: 10px 0;
+    max-width: 100%;
+}
+
+/* Footer Styles */
+footer {
+    background-color: #2c3e50;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+footer p {
+    margin: 10px 0;
+    font-size: 1em;
+}
+
+footer a {
+    color: #3498db;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    margin: 0 15px;
+    font-size: 0.9em; /* Small font size for the links */
+}
+
+footer a:hover {
+ color: #ecf0f1;
+}
+
+.password-container {
+    position: relative;
+    display: flex;
+    width: 100%; /* Adjust to fit the desired width */
+}
+
+#id_password {
+    flex-grow: 1;
+}
+
+.captcha-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; /* Adjust as needed */
+    margin-bottom: 10px;
+}
+
+#captchaImage {width:220px;height:90px;}
+
+.refresh-button {
+    background-color: #0073e6;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.refresh-button:hover {
+    background-color: #005bb5;
+}
+
+</style>
+</head>
+<body>
+<header>
+   <h1>My Shopping Site</h1> <br/>
+<!-- Main Menu -->
+<section class="main-menu">
+  <div class="menu-container">
+   <div class="centered-menus">
+  <nav><ul><li><a href="index.php" class="button1"><span>Home</span></a></li>
+        </ul>
+  </nav>
+  </div>
+ </div>
+</section>
+</header>
+
+
+    <div class="form-container"">
+        <h2>Sign In</h2>
+         <form action="login.php" method="post" id="signinForm">
+            <label for="email">Email Address:</label><input type="email" id="email" name="email" placeholder="Enter your email" required>
+            <label for="password">Password:</label>
+      <span class="password-container"><input type="password" id="id_password" name="password" placeholder="Enter your password" required>
+      <img src="images/eye.png" width="20" height="20" style="cursor: pointer; display: inline; margin-left: -25px; vertical-align: middle;" id="togglePassword"></span>
+      <label for="captcha">Captcha:</label>
+            <input type="text" id="captcha" name="captcha" required>  
+            <div class="captcha-container"><img id="captchaImage" src="" alt="Captcha Image">  
+            <button type="button" id="refreshCaptcha" class="refresh-button">&#8634;</button>
+            </div>
+            <button type="submit">Sign In</button>
+            <p>New user? <a href="register.html">Sign Up</a></p>
+        </form>
+    </div>
+
+
+
+ <footer>
+<a href="conditions.html">Conditions of Use</a> <a href="privacy.html">Privacy Notice</a> <a href="help.html">Help</a>
+        <p>&copy; 2024 My Shopping Site</p>
+    </footer>
+<script>
+const togglePassword = document.querySelector('#togglePassword');
+const password = document.querySelector('#id_password');
+
+togglePassword.addEventListener('click', function () {
+    // Toggle the type attribute
+    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+    password.setAttribute('type', type);
+
+    // Toggle the eye icon
+    if (password.getAttribute('type') === 'password') {
+        togglePassword.src = 'images/eye.png'; // Eye icon for hidden password
+    } else {
+        togglePassword.src = 'images/eyeslash.png'; // Eye slash icon for visible password
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Mapping of captcha images to their corresponding text
+    const captchaMapping = {
+        'images/captcha1.JPG': '24048B',
+        'images/captcha2.JPG': 'ic8',
+        'images/captcha3.JPG': 'smwm'
+    };
+
+    // List of captcha image URLs
+    const captchaImages = Object.keys(captchaMapping);
+
+    // Function to generate a random integer
+    function getRandomInt(max) {
+        return Math.floor(Math.random() * max);
+    }
+
+    // Function to set a random captcha image
+    function setRandomCaptcha() {
+        const randomIndex = getRandomInt(captchaImages.length);
+        const selectedCaptcha = captchaImages[randomIndex];
+        const captchaImage = document.getElementById('captchaImage');
+        
+        captchaImage.src = selectedCaptcha;
+        captchaImage.dataset.captchaText = captchaMapping[selectedCaptcha];
+    }
+
+    // Call setRandomCaptcha when the page loads
+    setRandomCaptcha();
+
+    // Function to validate the captcha input
+    document.getElementById('signinForm').addEventListener('submit', function(event) {
+        const userCaptcha = document.getElementById('captcha').value.trim();
+        const captchaText = document.getElementById('captchaImage').dataset.captchaText;
+
+        if (userCaptcha !== captchaText) {
+            event.preventDefault(); // Prevent form submission
+            alert('Captcha does not match. Please try again.');
+            setRandomCaptcha(); // Reload captcha image
+        }
+    });
+
+    // Add event listener for refresh button
+    document.getElementById('refreshCaptcha').addEventListener('click', function() {
+        setRandomCaptcha(); // Change captcha image
+    });
+});
+</script>
+</body>
+</html>
